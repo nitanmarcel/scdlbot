@@ -151,8 +151,10 @@ def guess_link_type(url): # TODO find multiple formats: mp3, wav, etc
     if "mp4" in url:
         return "Audio"
     return "Unknown"
+
+# Get content type from header
 def get_link_type(url):
-    r = requests.head('url')
+    r = requests.head(url)
     content_type = r.headers.get('Content-Type')
     if content_type:
         return content_type.split("/")[0].capitalize()
