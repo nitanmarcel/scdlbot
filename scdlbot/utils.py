@@ -168,25 +168,27 @@ def get_link_text(urls):
                             content_type = "Video"
                 if netloc.split('.')[0] == "manifest":
                     logger.debug("Manifest found. Parsing...")
-                    xml = requests.get(direct_url).content
-                    obj = untangle.parse(xml.decode())
-                    for ads in obj.MDP.Period.AdaptationSet:
-                        for rep in ads.Representation:
-                            url = rep.BaseURL.cdata
-                            parsed_url = urlparse(url)
-                            netloc = parsed_url.netloc
-                            logger.debug("Parsing from manifest: " + netloc)
-                            if netloc.startswith("www."):
-                                netloc = ".".join(netloc.split(".", 1)[-1])
-                            if netloc.split('.')[-2] == "googlevideo":
-                                queryes = parse_qs(parsed_url.query)
-                                mime = queryes.get("mime")
-                                if mime:
-                                    content_type = mime[0].split("/")[0].capitalize()
+                    r = requests.get(direct_url, allow_redirects=True)
+                    logger.debug("Got Manifest: " + r.content.decode())
+                    obj = untangle.parse(r.content.decode())
+                    if obj:
+                        for ads in obj.MDP.Period.AdaptationSet:
+                            for rep in ads.Representation:
+                                url = rep.BaseURL.cdata
+                                parsed_url = urlparse(url)
+                                netloc = parsed_url.netloc
+                                logger.debug("Parsing from manifest: " + netloc)
+                                if netloc.startswith("www."):
+                                    netloc = ".".join(netloc.split(".", 1)[-1])
+                                if netloc.split('.')[-2] == "googlevideo":
+                                    queryes = parse_qs(parsed_url.query)
+                                    mime = queryes.get("mime")
+                                    if mime:
+                                        content_type = mime[0].split("/")[0].capitalize()
+                                    else:
+                                        content_type = guess_link_type(url)
                                 else:
                                     content_type = guess_link_type(url)
-                            else:
-                                content_type = guess_link_type(url)
                 else:
                     content_type = guess_link_type(direct_url)
                 link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
