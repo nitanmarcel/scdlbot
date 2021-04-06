@@ -16,6 +16,8 @@ from plumbum import local, ProcessExecutionError, ProcessTimedOut
 
 from scdlbot.exceptions import *
 
+from urllib.parse import urlparse, parse_qs
+
 # from requests.exceptions import Timeout, RequestException, SSLError
 
 bin_path = os.getenv('BIN_PATH', '')
@@ -142,13 +144,21 @@ def get_link_text(urls):
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
             if "http" in direct_url:
-                content_type = ""
-                if "googlevideo" in direct_url:
-                    if "audio" in direct_url:
-                        content_type = "Audio"
-                    else:
-                        content_type = "Video"
-                # direct_url = shorten_url(direct_url)
+                content_type = get_mime_type(direct_url)
                 link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
     link_text += "\n*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
     return link_text
+
+def get_mime_type(url):
+    parsed_url = urlparse(url)
+    source = parsed_url.netloc.split('.')[-2]
+    queryes = parse_qs(parsed_url.query)
+    mime = queryes.get("mime")
+    if mime:
+        return mime[0].split("/")[0].capitalize()
+    else:
+        if source == "googlevideo":
+            if "audio" in url:
+                return "Audio"
+            return "Video"
+        return "Unknown"
