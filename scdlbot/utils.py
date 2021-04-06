@@ -127,7 +127,7 @@ def youtube_dl_func(url, ydl_opts, queue=None):
 
 def shorten_url(url):
     try:
-        return pyshorteners.Shortener(domain="https://envs.sh").nullpointer.short(url)
+        return pyshorteners.Shortener(domain="https://0x0.st").nullpointer.short(url)
     except:
         return url
 
