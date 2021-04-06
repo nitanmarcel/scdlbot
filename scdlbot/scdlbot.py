@@ -533,14 +533,11 @@ class ScdlBot:
         whitelist = set(x for x in os.environ.get("WHITELIST_DOMS", "").split())
         blacklist = set(x for x in os.environ.get("BLACKLIST_DOMS", "").split())
         netloc = urlparse(url).netloc
-        if whitelist:
-            if netloc not in whitelist:
-                return False
         if blacklist:
             if netloc in blacklist:
                 return False
-        if whitelist and blacklist:
-            if netloc in blacklist:
+        elif whitelist:
+            if netloc not in whitelist:
                 return False
         return True
 
@@ -920,20 +917,17 @@ class ScdlBot:
 
     def is_chat_allowed(self, chat_id):
         try:
-            whitelist = set(int(x) for x in os.environ.get("WHITELIST_CHATS", "").split())
+            whitelist = set(int(x) for x in os.environ.get("WHITELIST_IDS", "").split())
         except ValueError:
             raise ValueError("Your whitelisted chats does not contain valid integers.")
         try:
-            blacklist = set(int(x) for x in os.environ.get("BLACKLIST_CHATS", "").split())
+            blacklist = set(int(x) for x in os.environ.get("BLACKLIST_IDS", "").split())
         except ValueError:
             raise ValueError("Your blacklisted chats does not contain valid integers.")
-        if whitelist:
-            if chat_id not in whitelist:
-                return False
         if blacklist:
             if chat_id in blacklist:
                 return False
-        if whitelist and blacklist:
-            if chat_id in blacklist:
+        elif whitelist:
+            if chat_id not in whitelist:
                 return False
         return True
