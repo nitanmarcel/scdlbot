@@ -126,7 +126,7 @@ def youtube_dl_func(url, ydl_opts, queue=None):
 
 def shorten_url(url):
     try:
-        return requests.post("https://envs.sh/", {'shorten': (None, url)}).content
+        return requests.post("https://envs.sh/", {'shorten': (None, url)}).content.decode()
     except:
         raise
         return url
