@@ -188,11 +188,14 @@ def get_link_buttons(urls):
                                 else:
                                     content_type = guess_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
-                                    link_buttons.extend([InlineKeyboardButton(text=link_source + " | " + content_type, url=direct_url)])
+                                    link_buttons.append(InlineKeyboardButton(text=link_source + " | " + content_type, url=direct_url))
                 else:
                     content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
-                        link_buttons.extend([InlineKeyboardButton(text=content_type, url=direct_url)])
+                        link_buttons.append(InlineKeyboardButton(text=content_type, url=direct_url))
+    pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
+    if len(link_buttons) % 2 == 1:
+        pairs.append(link_buttons[-1])
     logger.debug("Lenght of inline buttons is: " + str(len([link_buttons[x:x+2] for x in range(0, len(link_buttons), 2)])))
     logger.debug(str(link_buttons))
     return InlineKeyboardMarkup(link_buttons)
