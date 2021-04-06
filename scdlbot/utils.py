@@ -145,10 +145,10 @@ def guess_link_type(url):
         return "Video"
 
 def get_link_buttons(urls):
-    link_text = ""
     link_buttons = []
     max_link_buttons = 50
-    for i, url in enumerate(urls):
+    for url in urls:
+        link_source = urlparse(url).netloc.split()[-2]
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
             content_type = "Unknown"
@@ -188,7 +188,7 @@ def get_link_buttons(urls):
                                 else:
                                     content_type = guess_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
-                                    link_buttons.extend([InlineKeyboardButton(text=content_type, url=direct_url)])
+                                    link_buttons.extend([InlineKeyboardButton(text=link_source + " | " + content_type, url=direct_url)])
                 else:
                     content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
