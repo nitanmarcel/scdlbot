@@ -18,7 +18,7 @@ from plumbum import local, ProcessExecutionError, ProcessTimedOut
 from scdlbot.exceptions import *
 
 from urllib.parse import urlparse, parse_qs
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton
 
 # from requests.exceptions import Timeout, RequestException, SSLError
 
@@ -145,6 +145,7 @@ def guess_link_type(url):
         return "Video"
 
 def get_link_buttons(urls):
+    link_text = ""
     link_buttons = []
     max_link_buttons = 50
     for i, url in enumerate(urls):
@@ -192,4 +193,4 @@ def get_link_buttons(urls):
                     content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
                         link_buttons.extend([InlineKeyboardButton(text=content_type, url=direct_url)])
-    return InlineKeyboardMarkup([link_buttons[x:x+2] for x in range(0, len(link_buttons), 2)])
+    return [link_buttons[x:x+2] for x in range(0, len(link_buttons), 2)]
