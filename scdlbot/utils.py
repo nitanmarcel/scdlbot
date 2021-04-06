@@ -160,5 +160,6 @@ def get_mime_type(url):
         if source == "googlevideo":
             if "audio" in url:
                 return "Audio"
-            return "Video"
+            else:
+                return "Video"
         return "Unknown"
