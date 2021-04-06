@@ -159,17 +159,6 @@ def get_link_buttons(urls):
                 parsed_url = urlparse(direct_url)
                 netloc = parsed_url.netloc
                 if netloc.startswith("www."):
-                    netloc = ".".join(netloc.split(".", 1)[-1])
-                if netloc.split('.')[-2] == "googlevideo":
-                    queryes = parse_qs(parsed_url.query)
-                    mime = queryes.get("mime")
-                    if mime:
-                        content_type = mime[0].split("/")[0].capitalize()
-                    else:
-                        if "audio" in url:
-                            content_type = "Audio"
-                        else:
-                            content_type = "Video"
                 if netloc.split('.')[0] == "manifest":
                     r = requests.get(direct_url, allow_redirects=True)
                     obj = untangle.parse(r.content.decode())
@@ -194,7 +183,13 @@ def get_link_buttons(urls):
                                     logger.debug(shorten_url(direct_url))
                                     link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)))
                 else:
-                    content_type = guess_link_type(direct_url)
+                    netloc = ".".join(netloc.split(".", 1)[-1])
+                    queryes = parse_qs(parsed_url.query)
+                    mime = queryes.get("mime")
+                    if mime:
+                        content_type = mime[0].split("/")[0].capitalize()
+                    else:
+                        content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
                         logger.debug(shorten_url(direct_url))
                         link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)))
