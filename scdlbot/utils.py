@@ -193,6 +193,7 @@ def get_link_buttons(urls):
                                 if len(link_buttons) < max_link_buttons:
                                     link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)))
                 else:
+                    queryes = parse_qs(parsed_url.query)
                     if queryes:
                         mime = queryes.get('mime')
                         if mime:
