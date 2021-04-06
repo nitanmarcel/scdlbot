@@ -18,7 +18,7 @@ from plumbum import local, ProcessExecutionError, ProcessTimedOut
 from scdlbot.exceptions import *
 
 from urllib.parse import urlparse, parse_qs
-from io import BytesIO
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # from requests.exceptions import Timeout, RequestException, SSLError
 
@@ -144,11 +144,10 @@ def guess_link_type(url):
     else:
         return "Video"
 
-def get_link_text(urls):
-    link_text = ""
-    raw_links = []
+def get_link_buttons(urls):
+    link_buttons = []
+    max_link_buttons = 50
     for i, url in enumerate(urls):
-        link_text += "[Source Link #{}]({}) | `{}`\n".format(str(i + 1), url, URL(url).host)
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
             content_type = "Unknown"
@@ -173,8 +172,8 @@ def get_link_text(urls):
                     if obj:
                         for ads in obj.MPD.Period.AdaptationSet:
                             for rep in ads.Representation:
-                                url = rep.BaseURL.cdata
-                                parsed_url = urlparse(url)
+                                direct_url = rep.BaseURL.cdata
+                                parsed_url = urlparse(direct_url)
                                 netloc = parsed_url.netloc
                                 if netloc.startswith("www."):
                                     netloc = ".".join(netloc.split(".", 1)[-1])
@@ -184,20 +183,13 @@ def get_link_text(urls):
                                     if mime:
                                         content_type = mime[0].split("/")[0].capitalize()
                                     else:
-                                        content_type = guess_link_type(url)
+                                        content_type = guess_link_type(direct_url)
                                 else:
-                                    content_type = guess_link_type(url)
-                                raw_links.append([content_type, url])
-                                #link_text += "• {} [Direct Link]({})\n".format(content_type, url)
+                                    content_type = guess_link_type(direct_url)
+                                if len(link_buttons) < max_link_buttons:
+                                    link_buttons.extend([InlineKeyboardButton(text=content_type, url=direct_url)])
                 else:
                     content_type = guess_link_type(direct_url)
-                    raw_links.append([content_type, url])
-                    #link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
-    direct_links_limit = 10
-    current_links_added = 0
-    for link in raw_links:
-        if current_links_added != direct_links_limit:
-            link_text += "• {} [Direct Link]({})\n".format(link[0], link[1])
-            current_links_added += 1
-    link_text += "\n*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
-    return link_text
+                    if len(link_buttons) < max_link_buttons:
+                        link_buttons.extend([InlineKeyboardButton(text=content_type, url=direct_url)])
+    return InlineKeyboardMarkup([link_buttons[x:x+2] for x in range(0, len(link_buttons), 2)])

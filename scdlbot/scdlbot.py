@@ -331,10 +331,13 @@ class ScdlBot:
                 wait_message = context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                                         parse_mode='Markdown', text=get_italic(self.get_wait_text()))
 
-                link_text = get_link_text(urls)
+                link_buttons = get_link_buttons(urls)
+                link_text = "[Source Link #{}]({}) | `{}`\n".format(str(i + 1), url, URL(url).host)
+                link_text += "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                          parse_mode='Markdown', disable_web_page_preview=True,
-                                         text=link_text if link_text else self.NO_URLS_TEXT)
+                                         text=link_text if link_text else self.NO_URLS_TEXT,
+                                         reply_markup=link_buttons)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
             elif mode == "ask":
                 # ask: always in PM and only if good urls exist in non-PM
