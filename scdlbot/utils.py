@@ -151,12 +151,13 @@ def get_link_text(urls):
         for direct_url in direct_urls:
             content_type = "Unknown"
             if "http" in direct_url:
-                parsed_url = urlparse(url).netloc
-                logger.debug("Starting parsing: " + parsed_url)
-                if parsed_url.startswith("www."):
-                    parsed_url = ".".join(parsed_url.split(".", 1)[-1])
-                googlevideo = parsed_url.split('.')[-2] == "googlevideo"
-                manifest = parsed_url.split('.')[0] == "manifest"
+                parsed_url = urlparse(url)
+                netloc = parsed_url.netloc
+                logger.debug("Starting parsing: " + netloc)
+                if netloc.startswith("www."):
+                    netloc = ".".join(netloc.split(".", 1)[-1])
+                googlevideo = netloc.split('.')[-2] == "googlevideo"
+                manifest = netloc.split('.')[0] == "manifest"
                 if googlevideo:
                     queryes = parse_qs(parsed_url.query)
                     mime = queryes.get("mime")
@@ -174,11 +175,12 @@ def get_link_text(urls):
                     for ads in obj.MDP.Period.AdaptationSet:
                         for rep in ads.Representation:
                             url = rep.BaseURL.cdata
-                            parsed_url = urlparse(url).netloc
-                            logger.debug("Parsing from manifest: " + parsed_url)
-                            if parsed_url.startswith("www."):
-                                parsed_url = ".".join(parsed_url.split(".", 1)[-1])
-                            googlevideo = parsed_url.split('.')[-2] == "googlevideo"
+                            parsed_url = urlparse(url)
+                            netloc = parsed_url.netloc
+                            logger.debug("Parsing from manifest: " + netloc)
+                            if netloc.startswith("www."):
+                                netloc = ".".join(netloc.split(".", 1)[-1])
+                            googlevideo = netloc.split('.')[-2] == "googlevideo"
                             if googlevideo:
                                 queryes = parse_qs(parsed_url.query)
                                 mime = queryes.get("mime")
