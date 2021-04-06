@@ -144,8 +144,13 @@ def log_and_track(event_name, message=None):
 def guess_link_type(url):
     if "audio" in url:
         return "Audio"
-    else:
+    if "mp3" in url:
+        return "Audio"
+    if "video" in url:
         return "Video"
+    if "mp4" in url:
+        return "Audio"
+
 
 def get_link_buttons(urls):
     link_buttons = []
@@ -160,16 +165,6 @@ def get_link_buttons(urls):
                 netloc = parsed_url.netloc
                 if netloc.startswith("www."):
                     netloc = ".".join(netloc.split(".", 1)[-1])
-                # if netloc.split('.')[-2] == "googlevideo":
-                #     queryes = parse_qs(parsed_url.query)
-                #     mime = queryes.get("mime")
-                #     if mime:
-                #         content_type = mime[0].split("/")[0].capitalize()
-                #     else:
-                #         if "audio" in url:
-                #             content_type = "Audio"
-                #         else:
-                #             content_type = "Video"
                 if netloc.split('.')[0] == "manifest":
                     r = requests.get(direct_url, allow_redirects=True)
                     obj = untangle.parse(r.content.decode())
