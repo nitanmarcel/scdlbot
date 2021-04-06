@@ -198,5 +198,6 @@ def get_link_text(urls):
     for link in raw_links:
         if current_links_added != direct_links_limit:
             link_text += "• {} [Direct Link]({})\n".format(link[0], link[1])
+            current_links_added += 1
     link_text += "\n*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
     return link_text
