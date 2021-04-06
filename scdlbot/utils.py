@@ -155,10 +155,8 @@ def get_link_text(urls):
                 netloc = parsed_url.netloc
                 if netloc.startswith("www."):
                     netloc = ".".join(netloc.split(".", 1)[-1])
-                googlevideo = netloc.split('.')[-2] == "googlevideo"
-                manifest = netloc.split('.')[0] == "manifest"
                 logger.debug("Get manifest string: " + netloc.split('.')[0])
-                if googlevideo:
+                if netloc.split('.')[-2] == "googlevideo":
                     queryes = parse_qs(parsed_url.query)
                     mime = queryes.get("mime")
                     if mime:
@@ -168,7 +166,7 @@ def get_link_text(urls):
                             content_type = "Audio"
                         else:
                             content_type = "Video"
-                elif manifest:
+                if netloc.split('.')[0] == "manifest":
                     logger.debug("Manifest found. Parsing...")
                     xml = requests.get(direct_url).content
                     obj = untangle.parse(xml)
@@ -180,8 +178,7 @@ def get_link_text(urls):
                             logger.debug("Parsing from manifest: " + netloc)
                             if netloc.startswith("www."):
                                 netloc = ".".join(netloc.split(".", 1)[-1])
-                            googlevideo = netloc.split('.')[-2] == "googlevideo"
-                            if googlevideo:
+                            if netloc.split('.')[-2] == "googlevideo":
                                 queryes = parse_qs(parsed_url.query)
                                 mime = queryes.get("mime")
                                 if mime:
