@@ -169,7 +169,7 @@ def get_link_text(urls):
                 if netloc.split('.')[0] == "manifest":
                     logger.debug("Manifest found. Parsing...")
                     xml = requests.get(direct_url).content
-                    obj = untangle.parse(xml)
+                    obj = untangle.parse(xml.decode())
                     for ads in obj.MDP.Period.AdaptationSet:
                         for rep in ads.Representation:
                             url = rep.BaseURL.cdata
