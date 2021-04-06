@@ -131,7 +131,6 @@ def shorten_url(url):
     try:
         return pyshorteners.Shortener(timeout=20).chilpit.short(url)
     except:
-        raise
         return url
 
 
@@ -150,7 +149,7 @@ def guess_link_type(url):
 
 def get_link_buttons(urls):
     link_buttons = []
-    max_link_buttons = 16
+    max_link_buttons = 99 # 100 - 1
     for url in urls:
         link_source = urlparse(url).netloc.split(".")[-2]
         direct_urls = urls[url].splitlines()
