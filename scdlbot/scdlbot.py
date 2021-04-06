@@ -332,7 +332,7 @@ class ScdlBot:
                                                         parse_mode='Markdown', text=get_italic(self.get_wait_text()))
 
                 link_buttons = get_link_buttons(urls)
-                logger.debug(str(InlineKeyboardMarkup(link_buttons)))
+                logger.debug("Buttons : " + str(InlineKeyboardMarkup(link_buttons)))
                 link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                          parse_mode='Markdown',
