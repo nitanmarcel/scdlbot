@@ -172,7 +172,7 @@ def get_link_text(urls):
                     logger.debug("Got Manifest: " + r.content.decode())
                     obj = untangle.parse(r.content.decode())
                     if obj:
-                        for ads in obj.MDP.Period.AdaptationSet:
+                        for ads in obj.MPD.Period.AdaptationSet:
                             for rep in ads.Representation:
                                 url = rep.BaseURL.cdata
                                 parsed_url = urlparse(url)
