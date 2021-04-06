@@ -187,11 +187,11 @@ def get_link_text(urls):
                                         content_type = guess_link_type(url)
                                 else:
                                     content_type = guess_link_type(url)
-                                raw_links.extend([content_type, url])
+                                raw_links.append([content_type, url])
                                 #link_text += "• {} [Direct Link]({})\n".format(content_type, url)
                 else:
                     content_type = guess_link_type(direct_url)
-                    raw_links.extend([content_type, url])
+                    raw_links.append([content_type, url])
                     #link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
     direct_links_limit = 10
     current_links_added = 0
