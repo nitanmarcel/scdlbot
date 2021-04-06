@@ -18,6 +18,7 @@ from plumbum import local, ProcessExecutionError, ProcessTimedOut
 from scdlbot.exceptions import *
 
 from urllib.parse import urlparse, parse_qs
+from io import BytesIO
 
 # from requests.exceptions import Timeout, RequestException, SSLError
 
@@ -145,6 +146,7 @@ def guess_link_type(url):
 
 def get_link_text(urls):
     link_text = ""
+    raw_links = []
     for i, url in enumerate(urls):
         link_text += "[Source Link #{}]({}) | `{}`\n".format(str(i + 1), url, URL(url).host)
         direct_urls = urls[url].splitlines()
@@ -185,9 +187,16 @@ def get_link_text(urls):
                                         content_type = guess_link_type(url)
                                 else:
                                     content_type = guess_link_type(url)
-                                link_text += "• {} [Direct Link]({})\n".format(content_type, url)
+                                raw_links.extend([content_type, url])
+                                #link_text += "• {} [Direct Link]({})\n".format(content_type, url)
                 else:
                     content_type = guess_link_type(direct_url)
-                    link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
+                    raw_links.extend([content_type, url])
+                    #link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
+    direct_links_limit = 10
+    current_links_added = 0
+    for link in raw_links:
+        if current_links_added != direct_links_limit:
+            link_text += "• {} [Direct Link]({})\n".format(link[0], link[1])
     link_text += "\n*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
     return link_text
