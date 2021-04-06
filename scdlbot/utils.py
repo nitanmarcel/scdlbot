@@ -153,11 +153,11 @@ def get_link_text(urls):
             if "http" in direct_url:
                 parsed_url = urlparse(direct_url)
                 netloc = parsed_url.netloc
-                logger.debug("Starting parsing: " + netloc)
                 if netloc.startswith("www."):
                     netloc = ".".join(netloc.split(".", 1)[-1])
                 googlevideo = netloc.split('.')[-2] == "googlevideo"
                 manifest = netloc.split('.')[0] == "manifest"
+                logger.debug("Get manifest string: " + netloc.split('.')[0])
                 if googlevideo:
                     queryes = parse_qs(parsed_url.query)
                     mime = queryes.get("mime")
