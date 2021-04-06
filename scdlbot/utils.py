@@ -191,10 +191,12 @@ def get_link_buttons(urls):
                                 else:
                                     content_type = guess_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
+                                    logger.debug(shorten_url(direct_url))
                                     link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)))
                 else:
                     content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
+                        logger.debug(shorten_url(direct_url))
                         link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)))
     if link_buttons:
         pairs = list(zip(link_buttons[::2], link_buttons[1::2]))

@@ -333,7 +333,7 @@ class ScdlBot:
 
                 link_buttons = get_link_buttons(urls)
                 link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
-                logger.debug("test: " + link_text if link_buttons else self.NO_URLS_TEXT)
+                logger.debug("test: " + str(link_buttons))
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                          parse_mode='Markdown',
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
