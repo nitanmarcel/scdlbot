@@ -188,18 +188,23 @@ def get_link_buttons(urls):
                                     netloc = ".".join(netloc.split(".", 1)[-1])
                                 content_type = get_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
-                                    link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)))
+                                    link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
                 else:
                     content_type = get_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
-                        link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)))
-    if link_buttons:
-        if len(link_buttons) > 1:
-            pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
-            if len(link_buttons) % 2 == 1:
-                pairs.append(link_buttons[-1])
-        else:
-            pairs = link_buttons
-        return InlineKeyboardMarkup([pairs,]) # Remainder to add it in a list with comma if pairs has just one element
-    else:
-        return []
+                        link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
+    pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
+    if len(link_buttons) % 2 == 1:
+        pairs.append(link_buttons[-1],)
+    return InlineKeyboardMarkup([pairs,])
+
+    # if link_buttons:
+    #     if len(link_buttons) > 1:
+    #         pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
+    #         if len(link_buttons) % 2 == 1:
+    #             pairs.append(link_buttons[-1])
+    #     else:
+    #         pairs = link_buttons
+    #     return InlineKeyboardMarkup([pairs,]) # Remainder to add it in a list with comma if pairs has just one element
+    # else:
+    #     return []
