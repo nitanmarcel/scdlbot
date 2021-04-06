@@ -333,6 +333,8 @@ class ScdlBot:
 
                 link_buttons = get_link_buttons(urls)
                 link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
+                logger.debug(link_text)
+                logger.debug("Type: " + str(link_buttons))
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                          parse_mode='Markdown', disable_web_page_preview=True,
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
@@ -421,6 +423,8 @@ class ScdlBot:
                 urls = self.prepare_urls(urls.keys(), direct_urls=True, source_ip=source_ip, proxy=proxy)
                 link_buttons = get_link_buttons(urls)
                 link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
+                logger.debug(link_text)
+                logger.debug("Type: " + str(link_buttons))
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=orig_msg_id,
                                          parse_mode='Markdown', disable_web_page_preview=True,
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
