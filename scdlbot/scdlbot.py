@@ -422,7 +422,6 @@ class ScdlBot:
                 urls = self.prepare_urls(urls.keys(), direct_urls=True, source_ip=source_ip, proxy=proxy)
                 link_buttons = get_link_buttons(urls)
                 link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
-                logger.debug("Line :" + 424)
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=orig_msg_id,
                                          parse_mode='Markdown',
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
