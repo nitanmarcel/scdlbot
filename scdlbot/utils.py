@@ -194,4 +194,4 @@ def get_link_buttons(urls):
                     if len(link_buttons) < max_link_buttons:
                         link_buttons.extend([InlineKeyboardButton(text=content_type, url=direct_url)])
     logger.debug("Lenght of inline buttons is: " + str(len([link_buttons[x:x+2] for x in range(0, len(link_buttons), 2)])))
-    return InlineKeyboardMarkup([link_buttons[x:x+2] for x in range(0, len(link_buttons), 2)])
+    return InlineKeyboardMarkup(link_buttons)
