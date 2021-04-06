@@ -131,6 +131,7 @@ def shorten_url(url):
     try:
         return pyshorteners.Shortener().chilpit.short(url)
     except:
+        raise
         return url
 
 
