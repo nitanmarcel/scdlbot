@@ -61,6 +61,7 @@ def get_direct_urls(url, cookies_file=None, cookies_download_file=None, source_i
         youtube_dl_args.extend(["--proxy", proxy])
 
     youtube_dl_args.extend(["--get-url", url])
+    youtube_dl_args.extend(["--rm-cache-dir"])
     try:
         ret_code, std_out, std_err = youtube_dl_bin[youtube_dl_args].run(timeout=60)
     except ProcessTimedOut as exc:
