@@ -196,7 +196,7 @@ def get_link_buttons(urls):
     pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
     if len(link_buttons) % 2 == 1:
         pairs.append(link_buttons[-1],)
-    return InlineKeyboardMarkup([pairs,])
+    return InlineKeyboardMarkup(pairs)
 
     # if link_buttons:
     #     if len(link_buttons) > 1:
