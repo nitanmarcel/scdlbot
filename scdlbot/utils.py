@@ -211,6 +211,6 @@ def get_link_buttons(urls):
                 pairs.append(link_buttons[-1])
         else:
             pairs = link_buttons
-        return InlineKeyboardMarkup(pairs)
+        return InlineKeyboardMarkup([pairs,])
     else:
         return []
