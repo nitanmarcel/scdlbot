@@ -155,7 +155,6 @@ def get_link_text(urls):
                 netloc = parsed_url.netloc
                 if netloc.startswith("www."):
                     netloc = ".".join(netloc.split(".", 1)[-1])
-                logger.debug("Get manifest string: " + netloc.split('.')[0])
                 if netloc.split('.')[-2] == "googlevideo":
                     queryes = parse_qs(parsed_url.query)
                     mime = queryes.get("mime")
@@ -175,7 +174,6 @@ def get_link_text(urls):
                                 url = rep.BaseURL.cdata
                                 parsed_url = urlparse(url)
                                 netloc = parsed_url.netloc
-                                logger.debug("Parsing from manifest: " + netloc)
                                 if netloc.startswith("www."):
                                     netloc = ".".join(netloc.split(".", 1)[-1])
                                 if netloc.split('.')[-2] == "googlevideo":
@@ -187,7 +185,6 @@ def get_link_text(urls):
                                         content_type = guess_link_type(url)
                                 else:
                                     content_type = guess_link_type(url)
-                                logger.debug("Found Entry Url in Manifest file: " + url)
                                 link_text += "• {} [Direct Link]({})\n".format(content_type, url)
                 else:
                     content_type = guess_link_type(direct_url)
