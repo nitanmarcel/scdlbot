@@ -129,7 +129,7 @@ def shorten_url(url):
     if not url.startswith("http"):
         url = "http://"
     try:
-        return pyshorteners.Shortener().chilpit.short(url)
+        return pyshorteners.Shortener(timeout=20).chilpit.short(url)
     except:
         raise
         return url
