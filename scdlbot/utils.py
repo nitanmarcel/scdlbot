@@ -167,9 +167,7 @@ def get_link_text(urls):
                         else:
                             content_type = "Video"
                 if netloc.split('.')[0] == "manifest":
-                    logger.debug("Manifest found. Parsing...")
                     r = requests.get(direct_url, allow_redirects=True)
-                    logger.debug("Got Manifest: " + r.content.decode())
                     obj = untangle.parse(r.content.decode())
                     if obj:
                         for ads in obj.MPD.Period.AdaptationSet:
@@ -189,6 +187,7 @@ def get_link_text(urls):
                                         content_type = guess_link_type(url)
                                 else:
                                     content_type = guess_link_type(url)
+                                logger.debug("Found Entry Url in Manifest file: " + url)
                                 link_text += "• {} [Direct Link]({})\n".format(content_type, url)
                 else:
                     content_type = guess_link_type(direct_url)
