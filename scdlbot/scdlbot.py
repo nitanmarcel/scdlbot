@@ -533,6 +533,8 @@ class ScdlBot:
         whitelist = set(x for x in os.environ.get("WHITELIST_DOMS", "").split())
         blacklist = set(x for x in os.environ.get("BLACKLIST_DOMS", "").split())
         netloc = urlparse(url).netloc
+        if netloc.startswith("www."):
+            netloc = ".".join(netloc.split(".", 1)[-1])
         if blacklist:
             if netloc in blacklist:
                 return False

@@ -152,11 +152,11 @@ def get_link_text(urls):
             content_type = "Unknown"
             if "http" in direct_url:
                 parsed_url = urlparse(url).netloc
+                logger.debug("Starting parsing: " + parsed_url)
                 if parsed_url.startswith("www."):
                     parsed_url = ".".join(parsed_url.split(".", 1)[-1])
                 googlevideo = parsed_url.split('.')[-2] == "googlevideo"
                 manifest = parsed_url.split('.')[0] == "manifest"
-                logger.debug(parsed_url.split('.')[0])
                 if googlevideo:
                     queryes = parse_qs(parsed_url.query)
                     mime = queryes.get("mime")
@@ -168,13 +168,14 @@ def get_link_text(urls):
                         else:
                             content_type = "Video"
                 elif manifest:
-                    logger.debug("parsing manifest")
+                    logger.debug("Manifest found. Parsing...")
                     xml = requests.get(direct_url).content
                     obj = untangle.parse(xml)
                     for ads in obj.MDP.Period.AdaptationSet:
                         for rep in ads.Representation:
                             url = rep.BaseURL.cdata
                             parsed_url = urlparse(url).netloc
+                            logger.debug("Parsing from manifest: " + parsed_url)
                             if parsed_url.startswith("www."):
                                 parsed_url = ".".join(parsed_url.split(".", 1)[-1])
                             googlevideo = parsed_url.split('.')[-2] == "googlevideo"
