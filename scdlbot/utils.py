@@ -146,7 +146,7 @@ def guess_link_type(url):
 
 def get_link_buttons(urls):
     link_buttons = []
-    max_link_buttons = 50
+    max_link_buttons = 12
     for url in urls:
         link_source = urlparse(url).netloc.split(".")[-2]
         direct_urls = urls[url].splitlines()
