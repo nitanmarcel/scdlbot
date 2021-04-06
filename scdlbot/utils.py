@@ -148,7 +148,7 @@ def get_link_buttons(urls):
     link_buttons = []
     max_link_buttons = 50
     for url in urls:
-        link_source = urlparse(url).netloc.split()[-2]
+        link_source = urlparse(url).netloc.split(".")[-2]
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
             content_type = "Unknown"
