@@ -128,7 +128,7 @@ def shorten_url(url):
     if not url.startswith("http"):
         url = "http://"
     try:
-        logger.debug("Shortening : " = url)
+        logger.debug("Shortening : " + url)
         return requests.post("https://envs.sh/", {'shorten': (None, url)}).content.decode()
     except:
         raise
