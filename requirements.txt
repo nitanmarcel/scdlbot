@@ -48,3 +48,4 @@ wcwidth==0.2.5; python_version >= "3.6"
 youtube-dl==2021.4.1
 zipp==3.4.1; python_version < "3.8" and python_version >= "3.6"
 untangle==1.1.1
+pyshorteners==1.0.1
