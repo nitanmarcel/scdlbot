@@ -332,10 +332,10 @@ class ScdlBot:
                                                         parse_mode='Markdown', text=get_italic(self.get_wait_text()))
 
                 link_buttons = get_link_buttons(urls)
-                link_text += "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
+                link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                          parse_mode='Markdown', disable_web_page_preview=True,
-                                         text=link_text if link_text else self.NO_URLS_TEXT,
+                                         text=link_text if link_buttons else self.NO_URLS_TEXT,
                                          reply_markup=link_buttons)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
             elif mode == "ask":
@@ -419,10 +419,12 @@ class ScdlBot:
                 wait_message = update.callback_query.edit_message_text(parse_mode='Markdown',
                                                                        text=get_italic(self.get_wait_text()))
                 urls = self.prepare_urls(urls.keys(), direct_urls=True, source_ip=source_ip, proxy=proxy)
-                link_text = get_link_text(urls)
+                link_buttons = get_link_buttons(urls)
+                link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=orig_msg_id,
                                          parse_mode='Markdown', disable_web_page_preview=True,
-                                         text=link_text if link_text else self.NO_URLS_TEXT)
+                                         text=link_text if link_buttons else self.NO_URLS_TEXT,
+                                         reply_markup=link_buttons)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
             elif action == "nodl":
                 context.bot.delete_message(chat_id=chat_id, message_id=btn_msg_id)
