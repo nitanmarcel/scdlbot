@@ -151,7 +151,7 @@ def get_link_text(urls):
         for direct_url in direct_urls:
             content_type = "Unknown"
             if "http" in direct_url:
-                parsed_url = urlparse(url)
+                parsed_url = urlparse(direct_url)
                 netloc = parsed_url.netloc
                 logger.debug("Starting parsing: " + netloc)
                 if netloc.startswith("www."):
