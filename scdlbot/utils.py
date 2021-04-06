@@ -154,6 +154,7 @@ def get_link_text(urls):
                 parsed_url = urlparse(url)
                 googlevideo = parsed_url.netloc.split('.')[-2] == "googlevideo"
                 manifest = parsed_url.netloc.split('.')[0] == "manifest"
+                logger.debug(parsed_url.netloc.split('.')[0])
                 if googlevideo:
                     queryes = parse_qs(parsed_url.query)
                     mime = queryes.get("mime")
@@ -165,6 +166,7 @@ def get_link_text(urls):
                         else:
                             content_type = "Video"
                 elif manifest:
+                    logger.debug("parsing manifest")
                     xml = requests.get(direct_url).content
                     obj = untangle.parse(xml)
                     for ads in obj.MDP.Period.AdaptationSet:
