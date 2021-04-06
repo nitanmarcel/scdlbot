@@ -3,6 +3,7 @@ import os
 
 import pkg_resources
 import requests
+import untangle
 
 try:
     import youtube_dl
@@ -136,6 +137,11 @@ def log_and_track(event_name, message=None):
         # if self.botan_token:
         #     return botan_track(self.botan_token, message, event_name)
 
+def guess_link_type(url):
+    if "audio" in url:
+        return "Audio"
+    else:
+        return "Video"
 
 def get_link_text(urls):
     link_text = ""
@@ -143,23 +149,40 @@ def get_link_text(urls):
         link_text += "[Source Link #{}]({}) | `{}`\n".format(str(i + 1), url, URL(url).host)
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
+            content_type = "Unknown"
             if "http" in direct_url:
-                content_type = get_mime_type(direct_url)
+                parsed_url = urlparse(url)
+                googlevideo = parsed_url.netloc.split('.')[-2] == "googlevideo"
+                manifest = parsed_url.netloc.split('.')[0] == "manifest"
+                if googlevideo:
+                    queryes = parse_qs(parsed_url.query)
+                    mime = queryes.get("mime")
+                    if mime:
+                        content_type = mime[0].split("/")[0].capitalize()
+                    else:
+                        if "audio" in url:
+                            content_type = "Audio"
+                        else:
+                            content_type = "Video"
+                elif manifest:
+                    xml = requests.get(direct_url).content
+                    obj = untangle.parse(xml)
+                    for ads in obj.MDP.Period.AdaptationSet:
+                        for rep in ads.Representation:
+                            url = rep.BaseURL.cdata
+                            parsed_url = urlparse(url)
+                            googlevideo = parsed_url.netloc.split('.')[-2] == "googlevideo"
+                            if googlevideo:
+                                queryes = parse_qs(parsed_url.query)
+                                mime = queryes.get("mime")
+                                if mime:
+                                    content_type = mime[0].split("/")[0].capitalize()
+                                else:
+                                    content_type = guess_link_type(url)
+                            else:
+                                content_type = guess_link_type(url)
+                else:
+                    content_type = guess_link_type(direct_url)
                 link_text += "• {} [Direct Link]({})\n".format(content_type, direct_url)
     link_text += "\n*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
     return link_text
-
-def get_mime_type(url):
-    parsed_url = urlparse(url)
-    source = parsed_url.netloc.split('.')[-2]
-    queryes = parse_qs(parsed_url.query)
-    mime = queryes.get("mime")
-    if mime:
-        return mime[0].split("/")[0].capitalize()
-    else:
-        if source == "googlevideo":
-            if "audio" in url:
-                return "Audio"
-            else:
-                return "Video"
-        return "Unknown"
