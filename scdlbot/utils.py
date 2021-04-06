@@ -4,7 +4,6 @@ import os
 import pkg_resources
 import requests
 import untangle
-import pyshorteners
 
 try:
     import youtube_dl
@@ -127,7 +126,7 @@ def youtube_dl_func(url, ydl_opts, queue=None):
 
 def shorten_url(url):
     try:
-        return pyshorteners.Shortener(domain="https://0x0.st").nullpointer.short(url)
+        return requests.post("https://envs.sh/", {'shorten': (None, url)}).content
     except:
         raise
         return url
