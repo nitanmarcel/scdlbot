@@ -151,7 +151,7 @@ def get_link_buttons(urls):
     link_buttons = []
     max_link_buttons = 99 # 100 - 1
     for url in urls:
-        link_source = urlparse(url).netloc.split(".")[-2]
+        link_source = ".".join(urlparse(url).netloc.split(".")[-2:])
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
             content_type = "Unknown"
@@ -191,7 +191,7 @@ def get_link_buttons(urls):
                                 else:
                                     content_type = guess_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
-                                    link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)),)
+                                    link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
                 else:
                     queryes = parse_qs(parsed_url.query)
                     if queryes:
@@ -203,7 +203,7 @@ def get_link_buttons(urls):
                     else:
                         content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
-                        link_buttons.append(InlineKeyboardButton(text=link_source.capitalize() + " | " + content_type, url=shorten_url(direct_url)),)
+                        link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
     if link_buttons:
         if len(link_buttons) > 1:
             pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
@@ -211,6 +211,6 @@ def get_link_buttons(urls):
                 pairs.append(link_buttons[-1])
         else:
             pairs = link_buttons
-        return InlineKeyboardMarkup([pairs,])
+        return InlineKeyboardMarkup([pairs,]) # Remainder to add it in a list with comma if pairs has just one element
     else:
         return []
