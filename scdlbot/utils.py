@@ -37,10 +37,10 @@ def get_response_text(file_name):
 def get_direct_urls(url, cookies_file=None, cookies_download_file=None, source_ip=None, proxy=None):
     logger.debug("Entered get_direct_urls")
     youtube_dl_args = []
-    cookies_files=None # force cookies to None
-    cookies_download_file = None
-    source_ip = None
-    proxy = None
+    #cookies_files=None # force cookies to None
+    #cookies_download_file = None
+    #source_ip = None
+    #proxy = None
 
     # https://github.com/ytdl-org/youtube-dl#how-do-i-pass-cookies-to-youtube-dl
     if cookies_file:
