@@ -4,6 +4,7 @@ import os
 import pkg_resources
 import requests
 import untangle
+import pyshorteners
 
 try:
     import youtube_dl
@@ -126,7 +127,7 @@ def youtube_dl_func(url, ydl_opts, queue=None):
 
 def shorten_url(url):
     try:
-        return requests.get('https://clck.ru/--?url=' + url).text.replace("https://", "")
+        return pyshorteners.Shortener(domain="https://envs.sh").nullpointer.short(url)
     except:
         return url
 
@@ -188,11 +189,11 @@ def get_link_buttons(urls):
                                 else:
                                     content_type = guess_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
-                                    link_buttons.append(InlineKeyboardButton(text=link_source + " | " + content_type, url=direct_url))
+                                    link_buttons.append(InlineKeyboardButton(text=link_source + " | " + content_type, url=shorten_url(direct_url)))
                 else:
                     content_type = guess_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
-                        link_buttons.append(InlineKeyboardButton(text=content_type, url=direct_url))
+                        link_buttons.append(InlineKeyboardButton(text=content_type, url=shorten_url(direct_url)))
     pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
     if len(link_buttons) % 2 == 1:
         pairs.append(link_buttons[-1])
