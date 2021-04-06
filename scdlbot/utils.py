@@ -141,7 +141,7 @@ def log_and_track(event_name, message=None):
         # if self.botan_token:
         #     return botan_track(self.botan_token, message, event_name)
 
-def guess_link_type(url):
+def guess_link_type(url): # TODO find multiple formats: mp3, wav, etc
     if "audio" in url:
         return "Audio"
     if "mp3" in url:
@@ -150,6 +150,14 @@ def guess_link_type(url):
         return "Video"
     if "mp4" in url:
         return "Audio"
+    return "Unknown"
+def get_link_type(url):
+    r = requests.head('url')
+    content_type = r.headers.get('Content-Type')
+    if content_type:
+        return content_type.split("/")[0].capitalize()
+    else:
+        return guess_link_type
 
 
 def get_link_buttons(urls):
@@ -176,27 +184,11 @@ def get_link_buttons(urls):
                                 netloc = parsed_url.netloc
                                 if netloc.startswith("www."):
                                     netloc = ".".join(netloc.split(".", 1)[-1])
-                                queryes = parse_qs(parsed_url.query)
-                                if queryes:
-                                    mime = queryes.get('mime')
-                                    if mime:
-                                        content_type = mime[0].split("/")[0].capitalize()
-                                    else:
-                                        content_type = guess_link_type(direct_url)
-                                else:
-                                    content_type = guess_link_type(direct_url)
+                                content_type = get_link_type(direct_url)
                                 if len(link_buttons) < max_link_buttons:
                                     link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
                 else:
-                    queryes = parse_qs(parsed_url.query)
-                    if queryes:
-                        mime = queryes.get('mime')
-                        if mime:
-                            content_type = mime[0].split("/")[0].capitalize()
-                        else:
-                            content_type = guess_link_type(direct_url)
-                    else:
-                        content_type = guess_link_type(direct_url)
+                    content_type = get_link_type(direct_url)
                     if len(link_buttons) < max_link_buttons:
                         link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
     if link_buttons:
