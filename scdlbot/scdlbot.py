@@ -337,7 +337,7 @@ class ScdlBot:
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                          parse_mode='Markdown',
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
-                                         reply_markup=InlineKeyboardMarkup(link_buttons))
+                                         reply_markup=InlineKeyboardMarkup(link_buttons) if link_buttons else None)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
             elif mode == "ask":
                 # ask: always in PM and only if good urls exist in non-PM
@@ -426,7 +426,7 @@ class ScdlBot:
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=orig_msg_id,
                                          parse_mode='Markdown',
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
-                                         reply_markup=InlineKeyboardMarkup(link_buttons))
+                                         reply_markup=InlineKeyboardMarkup(link_buttons) if link_buttons else None)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
             elif action == "nodl":
                 context.bot.delete_message(chat_id=chat_id, message_id=btn_msg_id)
