@@ -187,12 +187,14 @@ def get_link_buttons(urls):
                                 if netloc.startswith("www."):
                                     netloc = ".".join(netloc.split(".", 1)[-1])
                                 content_type = get_link_type(direct_url)
-                                if len(link_buttons) < max_link_buttons:
-                                    link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
+                                if content_type in ["Audio", "Video"]: # Add logger to tell that a not supported content was recieved
+                                    if len(link_buttons) < max_link_buttons:
+                                        link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
                 else:
                     content_type = get_link_type(direct_url)
-                    if len(link_buttons) < max_link_buttons:
-                        link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
+                    if content_type in ["Audio", "Video"]:
+                        if len(link_buttons) < max_link_buttons:
+                            link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
     pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
     if len(link_buttons) % 2 == 1:
         pairs.append(link_buttons[-1],)
