@@ -147,6 +147,16 @@ def get_netloc(url):
         return None
     return None
 
+def format_bytes(size):
+    power = 2**10
+    n = 0
+    power_labels = {0 : '', 1: 'k', 2: 'm', 3: 'g', 4: 't'}
+    while size > power:
+        size /= power
+        n += 1
+    return size + power_labels[n]+'b'
+
+
 def guesss_link_type(url):
     valid_audio = ["audio", "mp3", "m4a", "wav", "flac"]
     valid_video = ['video', 'mp4', 'avi', 'webm']
@@ -156,14 +166,18 @@ def guesss_link_type(url):
 
 def get_link_type(url):
     resp = requests.head(url)
+    res = ""
     if resp:
         content_type = resp.headers.get('Content-Type')
         if content_type:
             birate = resp.headers.get('x-amz-meta-bitrate')
+            content_size = resp.headers.get('Content-Length')
+            if content_size: 
+                res += format_bytes(int(content_size)) + " | " # x kb |
             if birate:
-                return str(birate) + "kbs " + content_type.split("/")[0].capitalize()
-            return content_type.split("/")[0].capitalize()
-    return guesss_link_type(url)
+                res += str(birate) + "kbs | "
+            res += content_type.split("/")[0].capitalize()
+    return res or guesss_link_type(url)
 
 
 def log_and_track(event_name, message=None):
@@ -192,11 +206,10 @@ def get_link_buttons(urls):
                         if content:
                             obj = untangle.parse(content.decode())
                             for ads in obj.MPD.Period.AdaptationSet:
-                                mime_type = ads['mimeType']
                                 for rep in ads.Representation:
                                     direct_url = rep.BaseURL.cdata
                                     netloc = get_netloc(direct_url)
-                                    content_type = mime_type.split("/")[0] if mime_type else get_link_type(direct_url)
+                                    content_type = get_link_type(direct_url)
                                     logger.debug("Got conent type: " + str(content_type))
                                     if content_type.split()[-1] in ["Video", "Audio", "Unknown"]:
                                         if len(buttons) < max_buttons:
@@ -204,7 +217,7 @@ def get_link_buttons(urls):
                 else:
                     content_type = get_link_type(direct_url)
                     logger.debug("Got content type: " + str(content_type.split()[-1]))
-                    if content_type.split()[-1] in ["Video", "Audio", "Unknows"]:
+                    if content_type.split()[-1] in ["Video", "Audio", "Unknown"]:
                         if len(buttons) < max_buttons:
                             buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
         pairs = list(zip(buttons[::2], buttons[1::2]))
