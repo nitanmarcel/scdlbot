@@ -193,8 +193,10 @@ def get_link_buttons(urls):
     buttons = []
     max_buttons = 100
     for url in urls:
+        logger.debug("Solving: " + str(url))
         source = ".".join(urlparse(url).netloc.split(".")[-2:])
         direct_urls = urls[url].splitlines()
+        logger.debug("Found Direct URLs: " + str(direct_urls))
         for direct_url in direct_urls:
             netloc = get_netloc(direct_url)
             if netloc:
