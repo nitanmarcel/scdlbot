@@ -202,7 +202,7 @@ class ScdlBot:
         chat_msgs = self.chat_storage[str(chat_id)].copy()
         for msg_id in chat_msgs:
             if msg_id != "settings":
-                timedelta = datetime.now() - self.chat_storage[str(chat_id)][msg_id]["message"].date
+                timedelta = datetime.now() - self.chat_storage[str(chat_id)][msg_id]["message"].date.replace(tzinfo=None)
                 if timedelta.days > 0:
                     self.chat_storage[str(chat_id)].pop(msg_id)
         self.chat_storage.sync()
