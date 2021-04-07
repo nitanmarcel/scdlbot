@@ -213,14 +213,14 @@ def get_link_buttons(urls):
                                     logger.debug("Got conent type: " + str(content_type))
                                     if content_type.split()[-1] in ["Video", "Audio", "Unknown"]:
                                         if len(buttons) < max_buttons:
-                                            buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
+                                            buttons.append([InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)),])
                 else:
                     content_type = get_link_type(direct_url)
                     logger.debug("Got content type: " + str(content_type.split()[-1]))
                     if content_type.split()[-1] in ["Video", "Audio", "Unknown"]:
                         if len(buttons) < max_buttons:
-                            buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
+                            buttons.append([InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)),])
         pairs = list(zip(buttons[::2], buttons[1::2]))
         if len(buttons) % 2 == 1:
             pairs.append(buttons[-1])
-        return InlineKeyboardMarkup(pairs if len(pairs) > 1 else [pairs,]) if len(pairs) > 0 else None
+        return InlineKeyboardMarkup(list(map(list, pairs))) if len(pairs) > 0 else None
