@@ -154,7 +154,7 @@ def format_bytes(size):
     while size > power:
         size /= power
         n += 1
-    return size + power_labels[n]+'b'
+    return str("%.2f" % size) + power_labels[n]+'b'
 
 
 def guesss_link_type(url):
@@ -223,4 +223,4 @@ def get_link_buttons(urls):
         pairs = list(zip(buttons[::2], buttons[1::2]))
         if len(buttons) % 2 == 1:
             pairs.append(buttons[-1])
-        return InlineKeyboardMarkup(pairs if len(pairs) > 1 else [pairs,])
+        return InlineKeyboardMarkup(pairs if len(pairs) > 1 else [pairs,]) if len(pairs) > 0 else None
