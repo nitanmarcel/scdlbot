@@ -352,7 +352,7 @@ class ScdlBot:
                     inline_keyboard = InlineKeyboardMarkup([[button_dl, button_link, button_cancel]])
                     context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
                                              reply_markup=inline_keyboard, text=question)
-                self.cleanup_chat(chat_id)
+                #self.cleanup_chat(chat_id)
 
     def button_query_callback(self, update: Update, context: CallbackContext):
 
