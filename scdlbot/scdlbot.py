@@ -332,10 +332,9 @@ class ScdlBot:
                                                         parse_mode='Markdown', text=get_italic(self.get_wait_text()))
 
                 link_buttons = get_link_buttons(urls)
-                link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
-                logger.debug("test: " + str(link_buttons))
+                link_text = link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted from."
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=reply_to_message_id,
-                                         parse_mode='Markdown',
+                                         parse_mode='Markdown', disable_web_page_preview=True,
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
                                          reply_markup=link_buttons)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
@@ -421,9 +420,9 @@ class ScdlBot:
                                                                        text=get_italic(self.get_wait_text()))
                 urls = self.prepare_urls(urls.keys(), direct_urls=True, source_ip=source_ip, proxy=proxy)
                 link_buttons = get_link_buttons(urls)
-                link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted"
+                link_text = link_text = "*Note:* Final download URLs are only guaranteed to work on the same machine/IP where extracted from."
                 context.bot.send_message(chat_id=chat_id, reply_to_message_id=orig_msg_id,
-                                         parse_mode='Markdown',
+                                         parse_mode='Markdown', disable_web_page_preview=True,
                                          text=link_text if link_buttons else self.NO_URLS_TEXT,
                                          reply_markup=link_buttons)
                 context.bot.delete_message(chat_id=chat_id, message_id=wait_message.message_id)
@@ -538,13 +537,14 @@ class ScdlBot:
         whitelist = set(x for x in os.environ.get("WHITELIST_DOMS", "").split())
         blacklist = set(x for x in os.environ.get("BLACKLIST_DOMS", "").split())
         netloc = urlparse(url).netloc
-        if netloc.startswith("www."):
-            netloc = ".".join(netloc.split(".", 1)[-1])
+        if whitelist:
+            if netloc not in whitelist:
+                return False
         if blacklist:
             if netloc in blacklist:
                 return False
-        elif whitelist:
-            if netloc not in whitelist:
+        if whitelist and blacklist:
+            if netloc in blacklist:
                 return False
         return True
 
@@ -924,17 +924,20 @@ class ScdlBot:
 
     def is_chat_allowed(self, chat_id):
         try:
-            whitelist = set(int(x) for x in os.environ.get("WHITELIST_IDS", "").split())
+            whitelist = set(int(x) for x in os.environ.get("WHITELIST_CHATS", "").split())
         except ValueError:
             raise ValueError("Your whitelisted chats does not contain valid integers.")
         try:
-            blacklist = set(int(x) for x in os.environ.get("BLACKLIST_IDS", "").split())
+            blacklist = set(int(x) for x in os.environ.get("BLACKLIST_CHATS", "").split())
         except ValueError:
             raise ValueError("Your blacklisted chats does not contain valid integers.")
+        if whitelist:
+            if chat_id not in whitelist:
+                return False
         if blacklist:
             if chat_id in blacklist:
                 return False
-        elif whitelist:
-            if chat_id not in whitelist:
+        if whitelist and blacklist:
+            if chat_id in blacklist:
                 return False
         return True

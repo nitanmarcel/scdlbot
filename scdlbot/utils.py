@@ -3,8 +3,8 @@ import os
 
 import pkg_resources
 import requests
-import untangle
 import pyshorteners
+import untangle
 
 try:
     import youtube_dl
@@ -14,12 +14,11 @@ except:
     youtube_dl_bin_name = 'youtube-dlc'
 
 from boltons.urlutils import URL
+from urllib.parse import urlparse
 from plumbum import local, ProcessExecutionError, ProcessTimedOut
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from scdlbot.exceptions import *
-
-from urllib.parse import urlparse, parse_qs
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # from requests.exceptions import Timeout, RequestException, SSLError
 
@@ -126,12 +125,45 @@ def youtube_dl_func(url, ydl_opts, queue=None):
 #     return False
 
 def shorten_url(url):
-    if not url.startswith("http"):
-        url = "http://"
+    s = pyshorteners.Shortener(timeout=10)
+    shorteners = [s.chilpit, s.owly, s.osdb. s.isgd, s.dagd, s.clckru]
+    for sortener in shorteners:
+        try:
+            return sortener.short(url)
+        except Exception:
+            pass
+
+    return url
+
+def get_netloc(url):
     try:
-        return pyshorteners.Shortener(timeout=20).chilpit.short(url)
-    except:
-        return url
+        parse = urlparse(url)
+        if all([parse.netloc, parse.scheme]):
+            netloc = parse.netloc
+            if netloc.startswith('www'):
+                netloc = netloc.split(".", 1)[-1]
+            return netloc
+    except Exception:
+        return None
+    return None
+
+def guesss_link_type(url):
+    valid_audio = ["audio", "mp3", "m4a", "wav", "flac"]
+    valid_video = ['vdeo', 'mp4', 'avi', 'webm']
+    is_audio = bool([t for t in valid_audio if t in url.lower()])
+    is_video = bool([t for t in valid_video if t in url.lower()])
+    return  "Audio" if is_audio else valid_video if is_video else "Unknown"
+
+def get_link_type(url):
+    resp = requests.head(url)
+    if resp:
+        content_type = resp.headers.get('Content-Type')
+        if content_type:
+            birate = resp.headers.get('x-amz-meta-bitrate')
+            if birate:
+                return birate + "kbs " + str(birate)
+            return content_type.split("/")[0].capitalize()
+    return guesss_link_type(url)
 
 
 def log_and_track(event_name, message=None):
@@ -141,72 +173,39 @@ def log_and_track(event_name, message=None):
         # if self.botan_token:
         #     return botan_track(self.botan_token, message, event_name)
 
-def guess_link_type(url): # TODO find multiple formats: mp3, wav, etc
-    if "audio" in url:
-        return "Audio"
-    if "mp3" in url:
-        return "Audio"
-    if "video" in url:
-        return "Video"
-    if "mp4" in url:
-        return "Audio"
-    return "Unknown"
-
-# Get content type from header
-def get_link_type(url):
-    r = requests.head(url)
-    content_type = r.headers.get('Content-Type')
-    if content_type:
-        return content_type.split("/")[0].capitalize()
-    else:
-        return guess_link_type
-
+# 
 
 def get_link_buttons(urls):
-    link_buttons = []
-    max_link_buttons = 99 # 100 - 1
+    buttons = []
+    max_buttons = 100
     for url in urls:
-        link_source = ".".join(urlparse(url).netloc.split(".")[-2:])
+        source = ".".join(urlparse(url).netloc.split(".")[-2:])
         direct_urls = urls[url].splitlines()
         for direct_url in direct_urls:
-            content_type = "Unknown"
-            if "http" in direct_url:
-                parsed_url = urlparse(direct_url)
-                netloc = parsed_url.netloc
-                if netloc.startswith("www."):
-                    netloc = ".".join(netloc.split(".", 1)[-1])
-                if netloc.split('.')[0] == "manifest":
-                    r = requests.get(direct_url, allow_redirects=True)
-                    obj = untangle.parse(r.content.decode())
-                    if obj:
-                        for ads in obj.MPD.Period.AdaptationSet:
-                            for rep in ads.Representation:
-                                direct_url = rep.BaseURL.cdata
-                                parsed_url = urlparse(direct_url)
-                                netloc = parsed_url.netloc
-                                if netloc.startswith("www."):
-                                    netloc = ".".join(netloc.split(".", 1)[-1])
-                                content_type = get_link_type(direct_url)
-                                if content_type in ["Audio", "Video"]: # Add logger to tell that a not supported content was recieved
-                                    if len(link_buttons) < max_link_buttons:
-                                        link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
+            netloc = get_netloc(direct_url)
+            if netloc:
+                if netloc.split(".")[0] == "manifest":
+                    logger.debug("Parsing manifest file")
+                    resp = requests.get(direct_url)
+                    if resp:
+                        content = resp.content
+                        if content:
+                            obj = untangle.parse(content.decode())
+                            for ads in obj.MPD.Period.AdaptationSet:
+                                for rep in ads.Representation:
+                                    direct_url = rep.BaseURL.cdata
+                                    netloc = get_netloc(direct_url)
+                                    content_type = get_link_type(direct_url)
+                                    logger.debug("Got conent type: " + content_type)
+                                    if content_type.split()[-1] in ["Video", "Audio"]:
+                                        if len(buttons) < max_buttons:
+                                            buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
                 else:
                     content_type = get_link_type(direct_url)
-                    if content_type in ["Audio", "Video"]:
-                        if len(link_buttons) < max_link_buttons:
-                            link_buttons.append(InlineKeyboardButton(text=content_type + " | " + link_source, url=shorten_url(direct_url)),)
-    pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
-    if len(link_buttons) % 2 == 1:
-        pairs.append(link_buttons[-1],)
-    return InlineKeyboardMarkup(pairs if len(pairs) > 1 else [pairs,])
-
-    # if link_buttons:
-    #     if len(link_buttons) > 1:
-    #         pairs = list(zip(link_buttons[::2], link_buttons[1::2]))
-    #         if len(link_buttons) % 2 == 1:
-    #             pairs.append(link_buttons[-1])
-    #     else:
-    #         pairs = link_buttons
-    #     return InlineKeyboardMarkup([pairs,]) # Remainder to add it in a list with comma if pairs has just one element
-    # else:
-    #     return []
+                    if content_type.split()[-1] in ["video", "Audio"]:
+                        if len(buttons) < max_buttons:
+                            buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
+        pairs = list(zip(buttons[::2], buttons[1::2]))
+        if len(buttons) % 2 == 1:
+            pairs.append(buttons[-1])
+        return InlineKeyboardMarkup(pairs if len(pairs) > 1 else [pairs,])
