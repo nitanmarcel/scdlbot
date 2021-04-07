@@ -126,7 +126,7 @@ def youtube_dl_func(url, ydl_opts, queue=None):
 
 def shorten_url(url):
     s = pyshorteners.Shortener(timeout=10)
-    shorteners = [s.chilpit, s.owly, s.osdb. s.isgd, s.dagd, s.clckru]
+    shorteners = [s.chilpit, s.osdb, s.isgd, s.dagd, s.clckru]
     for sortener in shorteners:
         try:
             return sortener.short(url)
@@ -149,10 +149,10 @@ def get_netloc(url):
 
 def guesss_link_type(url):
     valid_audio = ["audio", "mp3", "m4a", "wav", "flac"]
-    valid_video = ['vdeo', 'mp4', 'avi', 'webm']
+    valid_video = ['video', 'mp4', 'avi', 'webm']
     is_audio = bool([t for t in valid_audio if t in url.lower()])
     is_video = bool([t for t in valid_video if t in url.lower()])
-    return  "Audio" if is_audio else valid_video if is_video else "Unknown"
+    return  "Audio" if is_audio else "Video" if is_video else "Unknown"
 
 def get_link_type(url):
     resp = requests.head(url)
@@ -161,7 +161,7 @@ def get_link_type(url):
         if content_type:
             birate = resp.headers.get('x-amz-meta-bitrate')
             if birate:
-                return birate + "kbs " + str(birate)
+                return str(birate) + "kbs " + content_type.split("/")[0].capitalize()
             return content_type.split("/")[0].capitalize()
     return guesss_link_type(url)
 
@@ -192,17 +192,19 @@ def get_link_buttons(urls):
                         if content:
                             obj = untangle.parse(content.decode())
                             for ads in obj.MPD.Period.AdaptationSet:
+                                mime_type = ads['mimeType']
                                 for rep in ads.Representation:
                                     direct_url = rep.BaseURL.cdata
                                     netloc = get_netloc(direct_url)
-                                    content_type = get_link_type(direct_url)
-                                    logger.debug("Got conent type: " + content_type)
-                                    if content_type.split()[-1] in ["Video", "Audio"]:
+                                    content_type = mime_type.split("/")[0] if mime_type else get_link_type(direct_url)
+                                    logger.debug("Got conent type: " + str(content_type))
+                                    if content_type.split()[-1] in ["Video", "Audio", "Unknown"]:
                                         if len(buttons) < max_buttons:
                                             buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
                 else:
                     content_type = get_link_type(direct_url)
-                    if content_type.split()[-1] in ["video", "Audio"]:
+                    logger.debug("Got content type: " + str(content_type.split()[-1]))
+                    if content_type.split()[-1] in ["Video", "Audio", "Unknows"]:
                         if len(buttons) < max_buttons:
                             buttons.append(InlineKeyboardButton(text=content_type + " | " + source, url=shorten_url(direct_url)))
         pairs = list(zip(buttons[::2], buttons[1::2]))
